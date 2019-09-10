@@ -1,0 +1,5 @@
+
+conda create --name artificialintelligenceaz python=3.6 anaconda
+conda activate artificialintelligenceaz
+conda install pytorch-cpu torchvision-cpu -c pytorch
+spyder
