@@ -233,5 +233,3 @@ class CarApp(App):
 # Running the whole thing
 if __name__ == '__main__':
     CarApp().run()
-
-
