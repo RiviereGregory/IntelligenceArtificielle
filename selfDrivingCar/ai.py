@@ -20,12 +20,16 @@ class Network(nn.Module):
         super(Network, self).__init__()
         self.input_size = input_size
         self.nb_action = nb_action
-        self.fc1 = nn.Linear(input_size, 30) # création reseau neurone caché entrée
-        self.fc2 = nn.Linear(30, nb_action) # création reseau neurone caché sortie
+        self.fc1 = nn.Linear(input_size, 64) # création reseau neurone caché entrée
+        self.fc2 = nn.Linear(64, 32)
+        self.fc3 = nn.Linear(32, 16)
+        self.fc4 = nn.Linear(16, nb_action) # création reseau neurone caché sortie
         
     def forward(self, state):
         x = F.relu(self.fc1(state)) # couche cachée
-        q_values = self.fc2(x) # Prédiction
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        q_values = self.fc4(x) # Prédiction
         return q_values
     
 # Expèrience replay
@@ -60,7 +64,7 @@ class Dqn():
         self.last_reward = 0
 
     def select_action(self, state):
-        probs = F.softmax(self.model(state) * 7, dim=1)
+        probs = F.softmax(self.model(state) * 75, dim=1)
         action = probs.multinomial(num_samples=1)
         return action.data[0,0]
     
@@ -94,12 +98,12 @@ class Dqn():
     def save(self):
         torch.save({'state_dict': self.model.state_dict(),
                     'optimizer' : self.optimizer.state_dict(),
-                   }, 'last_brain.pth')
+                   }, 'last_brain2.pth')
         
     def load(self):
-        if os.path.isfile('last_brain.pth'):
+        if os.path.isfile('last_brain2.pth'):
             print("=> loading checkpoint... ")
-            checkpoint = torch.load("last_brain.pth")
+            checkpoint = torch.load("last_brain2.pth")
             self.model.load_state_dict(checkpoint['state_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             print("done !")

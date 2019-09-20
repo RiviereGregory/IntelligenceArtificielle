@@ -19,6 +19,11 @@ from kivy.clock import Clock
 # Importing the Dqn object from our AI in ai.py
 from ai import Dqn
 
+# Implémenter un timer
+from timeit import default_timer
+starting_time = default_timer()
+duration_time = default_timer() - starting_time
+
 # Adding this line if we don't want the right click to put a red point
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
@@ -29,7 +34,7 @@ n_points = 0
 length = 0
 
 # Getting our AI, which we call "brain", and that contains our neural network that represents our Q-function
-brain = Dqn(5,3,0.9)
+brain = Dqn(6,3,0.9)
 action2rotation = [0,20,-20]
 last_reward = 0
 scores = []
@@ -118,6 +123,8 @@ class Game(Widget):
         global goal_y
         global longueur
         global largeur
+        global starting_time
+        global duration_time
 
         longueur = self.width
         largeur = self.height
@@ -127,7 +134,8 @@ class Game(Widget):
         xx = goal_x - self.car.x
         yy = goal_y - self.car.y
         orientation = Vector(*self.car.velocity).angle((xx,yy))/180.
-        last_signal = [self.car.signal1, self.car.signal2, self.car.signal3, orientation, -orientation]
+        last_signal = [self.car.signal1, self.car.signal2, self.car.signal3, 
+                           orientation, -orientation, duration_time]
         action = brain.update(last_reward, last_signal)
         scores.append(brain.score())
         rotation = action2rotation[action]
@@ -139,10 +147,10 @@ class Game(Widget):
 
         if sand[int(self.car.x),int(self.car.y)] > 0:
             self.car.velocity = Vector(1, 0).rotate(self.car.angle)
-            last_reward = -1
+            last_reward = -1.5
         else: # otherwise
             self.car.velocity = Vector(6, 0).rotate(self.car.angle)
-            last_reward = -0.2
+            last_reward = -0.1
             if distance < last_distance:
                 last_reward = 0.1
 
@@ -162,6 +170,12 @@ class Game(Widget):
         if distance < 100:
             goal_x = self.width-goal_x
             goal_y = self.height-goal_y
+            last_reward = 2
+            starting_time = default_timer()
+            
+        duration_time = default_timer() - starting_time
+        if duration_time > 10:
+            last_reward = last_reward - 0.2
         last_distance = distance
 
 # Adding the painting tools
