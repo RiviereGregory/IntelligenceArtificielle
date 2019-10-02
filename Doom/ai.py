@@ -24,6 +24,7 @@ import experience_replay, image_preprocessing
 
 # Part 1 - Building the AI
 
+#Cerveau
 class CNN(nn.Module):
     
     def __init__(self, number_actions):
@@ -49,6 +50,32 @@ class CNN(nn.Module):
         x = F.relu(self.fc1(x)) # Fonction d'activation
         x = self.fc2(x)
         return x
+#Corps
+class SoftmaxBody(nn.module):
+    
+    def __init__(self, T):
+        super(SoftmaxBody, self).__init__()
+        self.T = T
+          
+    def forward(self, outputs):
+        probs = F.softmax(outputs * self.T, dim=0)
+        actions = probs.multinomial(num_samples=1)
+        return actions
+    
+# liens entre corps et cerveau
+class AI:
+    
+    def __init__(self, brain, body):
+        self.brain = brain
+        self.body = body
+        
+    def __call__(self, inputs):
+        inputs = Variable(torch.from_numpy(np.array(inputs, dtype = np.float32)))
+        outputs = self.brain(inputs)
+        actions = self.body(outputs)
+        return actions.data.numpy        
+        
+
 
 # Part 2 - Training the AI with Deep Convolutional Q-Learning
 
