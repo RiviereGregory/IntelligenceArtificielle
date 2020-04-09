@@ -3,7 +3,6 @@
 Installations
 =============================
 
---------------------------------------
 **Installation PyTorch**
 
 conda create --name artificialintelligenceaz python=3.6 anaconda
