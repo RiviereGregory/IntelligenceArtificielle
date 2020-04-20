@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 # Training the AI
 
 import torch
@@ -15,7 +17,7 @@ def ensure_shared_grads(model, shared_model):
 def train(rank, params, shared_model, optimizer):
     torch.manual_seed(params.seed + rank)
     env = create_atari_env(params.env_name)
-    env.seed(params.seed + rank) # désynchro des agent
+    env.seed(params.seed + rank) # desynchro des agent
     model = ActorCritic(env.observation_space.shape[0], env.action_space)
     state = env.reset()
     state = torch.from_numpy(state)
@@ -39,7 +41,7 @@ def train(rank, params, shared_model, optimizer):
         # Exploration de l'environement une dizaine de pas
         for step in range(params.num_steps):
             # Ajout d'une dimension au state pour le modèle
-            value, action_values, (hx, cx) = model(Variable(state.unsqueeze(0)), (hx, cx))
+            value, action_values, (hx, cx) = model((Variable(state.unsqueeze(0)), (hx, cx)))
             # Prendre une action
             prob = F.softmax(action_values)
             log_prob = F.log_softmax(action_values)
@@ -64,7 +66,7 @@ def train(rank, params, shared_model, optimizer):
         # Calcul fonction de cout
         R = torch.zeros(1, 1)
         if not done:
-            value, _, _ = model(Variable(state.unsqueeze(0)), (hx, cx))
+            value, _, _ = model((Variable(state.unsqueeze(0)), (hx, cx)))
             R = value.data
         values.append(Variable(R))
         policy_loss = 0

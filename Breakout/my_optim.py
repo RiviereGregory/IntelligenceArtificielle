@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 # Optimizer
 
 import math
@@ -8,7 +10,7 @@ class SharedAdam(optim.Adam):
 
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=0):
         super(SharedAdam, self).__init__(params, lr, betas, eps, weight_decay)
-        # Modification des paramètre de l'Adam d'origine
+        # Modification des parametre de l'Adam d'origine
         for group in self.param_groups:
             for p in group['params']:
                 state = self.state[p]
